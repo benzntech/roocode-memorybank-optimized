@@ -1,20 +1,20 @@
 # Quick Start Guide
 
-This guide will help you quickly set up and start using the VibeCoding Memory Bank, including the Roo-Code integration.
+This guide will help you quickly set up and start using the Roocode Memory Bank Optimized, including the Roo-Code integration.
 
 ## Installation
 
 ### Method 1: Install from npm
 
 ```bash
-npm install vibecoding-memory-bank
+npm install roocode-memorybank-optimized
 ```
 
 ### Method 2: Clone and install locally
 
 ```bash
-git clone https://github.com/vibecoding/memory-bank.git
-cd memory-bank
+git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
+cd roocode-memorybank-optimized
 npm install
 npm run build
 ```

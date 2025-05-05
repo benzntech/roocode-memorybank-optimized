@@ -1,5 +1,5 @@
 {
-  "name": "vibecoding-memory-bank",
+  "name": "roocode-memorybank-optimized",
   "version": "1.0.0",
   "description": "Enhanced Memory Bank System for project context retention and documentation",
   "main": "dist/index.js",
@@ -24,7 +24,7 @@
     "roo-code",
     "ai-coding-assistant"
   ],
-  "author": "VibeCoding",
+  "author": "Shipdocs",
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^11.1.1"

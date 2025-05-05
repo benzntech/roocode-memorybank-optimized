@@ -1,6 +1,6 @@
 # API Reference
 
-This document provides a comprehensive reference for developers who want to use the VibeCoding Memory Bank programmatically. It covers all the available classes, interfaces, methods, and their parameters.
+This document provides a comprehensive reference for developers who want to use the Roocode Memory Bank Optimized programmatically. It covers all the available classes, interfaces, methods, and their parameters.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ Creates a new Memory Bank instance.
 
 **Example:**
 ```javascript
-import { MemoryBank } from 'vibecoding-memory-bank';
+import { MemoryBank } from 'roocode-memorybank-optimized';
 
 // With default directory
 const memoryBank = new MemoryBank();
@@ -175,7 +175,7 @@ Creates a new Enhanced Memory Bank instance.
 
 **Example:**
 ```javascript
-import { EnhancedMemoryBank, MemoryBankConfig } from 'vibecoding-memory-bank';
+import { EnhancedMemoryBank, MemoryBankConfig } from 'roocode-memorybank-optimized';
 
 const config: MemoryBankConfig = {
   baseDir: '/path/to/memory-bank',
@@ -311,7 +311,7 @@ Creates a new Roo-Code integration instance.
 
 **Example:**
 ```javascript
-import { RooIntegration } from 'vibecoding-memory-bank';
+import { RooIntegration } from 'roocode-memorybank-optimized';
 
 // With default configuration
 const rooIntegration = new RooIntegration();

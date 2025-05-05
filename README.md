@@ -1,4 +1,4 @@
-# VibeCoding Memory Bank
+# Roocode Memory Bank Optimized
 
 A powerful system for project context retention and documentation that helps developers maintain a persistent memory of their work, with Roo-Code integration.
 May work with other tools as well, or change it so it does
@@ -34,11 +34,11 @@ The system automatically tracks statistics like time spent, estimated cost, file
 
 ```bash
 # Install from npm
-npm install vibecoding-memory-bank
+npm install roocode-memorybank-optimized
 
 # Or clone and install locally
-git clone https://github.com/vibecoding/memory-bank.git
-cd memory-bank
+git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
+cd roocode-memorybank-optimized
 npm install
 npm run build
 ```
@@ -116,7 +116,7 @@ npx umb roo-sync
 ### Programmatic Usage
 
 ```javascript
-import { MemoryBank, RooIntegration } from 'vibecoding-memory-bank';
+import { MemoryBank, RooIntegration } from 'roocode-memorybank-optimized';
 
 // Create a new memory bank instance
 const memoryBank = new MemoryBank('/path/to/memory-bank');

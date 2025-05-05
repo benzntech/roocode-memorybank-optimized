@@ -1,6 +1,6 @@
 # User Guide
 
-This comprehensive guide explains how to use the VibeCoding Memory Bank system efficiently for project context retention and documentation.
+This comprehensive guide explains how to use the Roocode Memory Bank Optimized system efficiently for project context retention and documentation.
 
 ## Table of Contents
 
@@ -27,14 +27,14 @@ This comprehensive guide explains how to use the VibeCoding Memory Bank system e
 ### From npm Registry
 
 ```bash
-npm install vibecoding-memory-bank
+npm install roocode-memorybank-optimized
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/vibecoding/memory-bank.git
-cd memory-bank
+git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
+cd roocode-memorybank-optimized
 npm install
 npm run build
 ```
@@ -42,7 +42,7 @@ npm run build
 ### Global Installation
 
 ```bash
-npm install -g vibecoding-memory-bank
+npm install -g roocode-memorybank-optimized
 ```
 
 ## Initialization
@@ -336,7 +336,7 @@ Roo-Code reads these files to gain context about your project, which helps it pr
 You can also use the memory bank programmatically:
 
 ```javascript
-import { MemoryBank, RooIntegration } from 'vibecoding-memory-bank';
+import { MemoryBank, RooIntegration } from 'roocode-memorybank-optimized';
 
 // Create and initialize memory bank
 const memoryBank = new MemoryBank('/path/to/memory-bank');
@@ -427,8 +427,8 @@ Solution: Check the file permissions in your memory bank directory.
 
 For more help, check the following resources:
 
-- GitHub repository: [vibecoding/memory-bank](https://github.com/vibecoding/memory-bank)
-- Issue tracker: [vibecoding/memory-bank/issues](https://github.com/vibecoding/memory-bank/issues)
+- GitHub repository: [shipdocs/roocode-memorybank-optimized](https://github.com/shipdocs/roocode-memorybank-optimized)
+- Issue tracker: [shipdocs/roocode-memorybank-optimized/issues](https://github.com/shipdocs/roocode-memorybank-optimized/issues)
 
 ## Further Reading
 

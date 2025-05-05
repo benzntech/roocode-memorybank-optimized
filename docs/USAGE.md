@@ -1,4 +1,4 @@
-# VibeCoding Memory Bank - Usage Guide
+# Roocode Memory Bank Optimized - Usage Guide
 
 This guide provides detailed instructions on how to use the Enhanced Memory Bank system effectively.
 
@@ -30,20 +30,20 @@ The Enhanced Memory Bank system is designed to solve the problem of context loss
 
 ```bash
 # Install globally
-npm install -g vibecoding-memory-bank
+npm install -g roocode-memorybank-optimized
 
 # Or install locally in your project
-npm install --save-dev vibecoding-memory-bank
+npm install --save-dev roocode-memorybank-optimized
 ```
 
 ### Manual Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/vibecoding/memory-bank.git
+git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
 
 # Navigate to the directory
-cd memory-bank
+cd roocode-memorybank-optimized
 
 # Install dependencies
 npm install
@@ -150,7 +150,7 @@ umb reconstruct 60
 You can use the memory bank programmatically in your Node.js applications:
 
 ```javascript
-import { MemoryBank } from 'vibecoding-memory-bank';
+import { MemoryBank } from 'roocode-memorybank-optimized';
 
 // Create a new memory bank instance
 const memoryBank = new MemoryBank('/path/to/memory-bank');
@@ -266,6 +266,6 @@ If reconstruction from Git history is failing, check:
 ### Getting Help
 
 If you encounter any issues not covered in this guide, please:
-- Check the [GitHub repository](https://github.com/vibecoding/memory-bank) for known issues
+- Check the [GitHub repository](https://github.com/shipdocs/roocode-memorybank-optimized) for known issues
 - Open a new issue on GitHub with a detailed description of the problem
 - Contact the maintainers for support
