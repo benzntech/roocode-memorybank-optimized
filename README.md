@@ -249,25 +249,28 @@ The memory bank system can be integrated with other tools:
 
 The memory bank system integrates seamlessly with Roo-Code, an AI-powered autonomous coding agent. This integration allows Roo-Code to access your project context, decisions, and patterns.
 
-```bash
-# Set up Roo-Code integration
-npx umb roo-setup
+#### Smart Integration - Just Type "UMB"
 
-# After updating memory bank, sync with Roo-Code
+Using Memory Bank with Roo is as simple as typing:
+
+```
+UMB
+```
+
+The system will:
+- Automatically set up Memory Bank if it's not already installed
+- Guide you through context updates with simple questions
+- Suggest relevant context updates based on your current work
+
+No complex commands to remember - just type "UMB" and let Roo handle the rest.
+
+```bash
+# Traditional setup (optional, handled automatically when you type "UMB")
+npx umb roo-setup
 npx umb roo-sync
 ```
 
-#### Shell Integration
-
-You can use Memory Bank commands directly in the Roo chat interface using Roo's shell integration:
-
-```
-!umb update activeContext currentFocus='Implementing feature X'
-!umb add decision title='Use TypeScript' rationale='Better type safety'
-!umb roo-sync
-```
-
-This creates a seamless workflow where you can update your project context without leaving the Roo chat.
+This creates a frictionless workflow where Roo handles the complexity of maintaining your project context, allowing you to focus on coding.
 
 For detailed instructions, see [Roo-Code Integration](docs/ROO-INTEGRATION.md).
 

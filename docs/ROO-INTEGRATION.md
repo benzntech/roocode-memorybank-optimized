@@ -520,61 +520,70 @@ Set up automation:
 - Schedule regular sync operations
 - Integrate with your CI/CD pipeline
 
-### 5. Shell Integration
+### 5. Smart Integration with Roo
 
-Use Roo's shell integration for a seamless workflow:
-- Run Memory Bank commands directly from Roo chat
-- Update context without leaving your coding environment
-- Let Roo suggest context updates based on your work
+Make Roo context-aware with minimal effort:
+- Just type "UMB" in Roo chat to activate Memory Bank features
+- Let Roo guide you through context updates with simple questions
+- Maintain project context without leaving your coding environment
 
-## Shell Integration with Roo
+## Smart Memory Bank Integration with Roo
 
-The Memory Bank system can be used directly from the Roo chat interface using Roo's shell integration feature. This allows you to update your project context without switching to a terminal.
+The Memory Bank system is designed to work seamlessly with Roo, requiring minimal effort from users. Simply type "UMB" in the Roo chat, and the system will intelligently handle the rest.
 
-### Using UMB Commands in Roo Chat
+### Just Type "UMB" in Roo Chat
 
-With Roo's shell integration, you can run Memory Bank commands directly in the chat by prefixing them with `!`:
+Using Memory Bank with Roo is as simple as typing:
 
 ```
-!umb update activeContext currentFocus='Implementing feature X'
-!umb add decision title='Use TypeScript' rationale='Better type safety' implications='Need to refactor existing code' status='Implemented'
-!umb update productContext coreFeatures='- Feature A\n- Feature B'
-!umb roo-sync
+UMB
 ```
 
-### Setup Requirements
+The system will:
+1. Automatically detect if Memory Bank is set up
+2. Install and configure it if needed
+3. Guide you through context updates with simple questions
+4. Suggest relevant context updates based on your current work
 
-To use Memory Bank commands in Roo chat:
+### First-Time Setup
 
-1. Ensure the Memory Bank is installed with the `npm link` option to make the `umb` command globally available
-2. Verify that the `umb` command works in your terminal
-3. Make sure Roo's shell integration is enabled
+When you first type "UMB" in Roo chat, the system will:
 
-### Common Use Cases
+1. Check if Memory Bank is installed
+2. Set up the necessary directory structure
+3. Initialize the Memory Bank for your project
+4. Guide you through creating your initial context
 
-Here are some effective ways to use Memory Bank commands in Roo chat:
+No manual installation or configuration required - just type "UMB" and follow the prompts.
 
-1. **Update context while discussing code**:
+### Smart Context Updates
+
+The system intelligently handles context updates:
+
+1. **Automatic focus detection**:
    ```
-   !umb update activeContext currentFocus='Refactoring authentication system'
-   ```
-
-2. **Record decisions during design discussions**:
-   ```
-   !umb add decision title='Switch to GraphQL' rationale='More efficient data fetching' implications='Need to learn GraphQL schema design' status='Pending'
-   ```
-
-3. **Sync context after making changes**:
-   ```
-   !umb roo-sync
-   ```
-
-4. **Check current context**:
-   ```
-   !cat memory-bank/activeContext.md
+   UMB
+   > I notice you're working on authentication. Update your active context?
+   > [Yes] [No] [Show me what you detected]
    ```
 
-This integration creates a powerful workflow where code changes and context documentation happen simultaneously, with Roo acting as both a coding assistant and a Memory Bank facilitator.
+2. **Guided decision recording**:
+   ```
+   UMB decision
+   > Let's record a decision. What's the title?
+   > After you type the title, I'll ask for rationale and implications.
+   ```
+
+3. **Context-aware suggestions**:
+   ```
+   UMB
+   > Based on your recent commits, should I update your active context to
+   > "Implementing user authentication" and add "JWT vs. session-based auth"
+   > to open questions?
+   > [Yes] [No] [Edit suggestion]
+   ```
+
+This integration creates a frictionless workflow where Roo handles the complexity of maintaining your project context, allowing you to focus on coding.
 
 ### 5. Team Alignment
 
