@@ -4,13 +4,9 @@ This guide will help you quickly set up and start using the Roocode Memory Bank 
 
 ## Installation
 
-### Method 1: Install from npm
+There are two recommended ways to use this package:
 
-```bash
-npm install roocode-memorybank-optimized
-```
-
-### Method 2: Clone and install locally
+### Method 1: Clone the repository in a dedicated directory
 
 ```bash
 git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
@@ -18,6 +14,19 @@ cd roocode-memorybank-optimized
 npm install
 npm run build
 ```
+
+### Method 2: Download as a ZIP file
+
+1. Download the ZIP from GitHub: https://github.com/shipdocs/roocode-memorybank-optimized/archive/refs/heads/main.zip
+2. Extract to a directory of your choice
+3. Navigate to the directory and run:
+```bash
+cd path/to/extracted/directory
+npm install
+npm run build
+```
+
+> **Note:** This package is not currently registered on npm. Do not clone this repository directly inside another git repository to avoid git-in-git issues.
 
 ## Basic Setup
 

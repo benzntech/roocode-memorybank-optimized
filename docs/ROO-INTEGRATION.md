@@ -47,12 +47,17 @@ npx umb roo-sync
 First, make sure the memory bank is initialized:
 
 ```bash
-# Install the package if needed
-npm install roocode-memorybank-optimized
+# Clone the repository if needed
+git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
+cd roocode-memorybank-optimized
+npm install
+npm run build
 
 # Initialize the memory bank
 npx umb init
 ```
+
+> **Note:** This package is not currently registered on npm. See the [README.md](../README.md) for detailed installation instructions.
 
 ### 2. Set Up Roo-Code Integration
 

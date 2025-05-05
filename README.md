@@ -32,16 +32,25 @@ The system automatically tracks statistics like time spent, estimated cost, file
 
 ### Installation
 
-```bash
-# Install from npm
-npm install roocode-memorybank-optimized
+There are two recommended ways to use this package:
 
-# Or clone and install locally
+```bash
+# Option 1: Clone the repository in a dedicated directory
 git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
 cd roocode-memorybank-optimized
 npm install
 npm run build
+
+# Option 2: Download as a ZIP file
+# 1. Download the ZIP from GitHub: https://github.com/shipdocs/roocode-memorybank-optimized/archive/refs/heads/main.zip
+# 2. Extract to a directory of your choice
+# 3. Navigate to the directory and run:
+cd path/to/extracted/directory
+npm install
+npm run build
 ```
+
+> **Note:** This package is not currently registered on npm. Do not clone this repository directly inside another git repository to avoid git-in-git issues.
 
 ### Initialize the Memory Bank
 

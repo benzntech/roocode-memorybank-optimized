@@ -26,17 +26,9 @@ The Enhanced Memory Bank system is designed to solve the problem of context loss
 
 ## Installation
 
-### NPM Installation
+There are two recommended ways to use this package:
 
-```bash
-# Install globally
-npm install -g roocode-memorybank-optimized
-
-# Or install locally in your project
-npm install --save-dev roocode-memorybank-optimized
-```
-
-### Manual Installation
+### Method 1: Clone the repository in a dedicated directory
 
 ```bash
 # Clone the repository
@@ -54,6 +46,22 @@ npm run build
 # Link for global usage (optional)
 npm link
 ```
+
+### Method 2: Download as a ZIP file
+
+1. Download the ZIP from GitHub: https://github.com/shipdocs/roocode-memorybank-optimized/archive/refs/heads/main.zip
+2. Extract to a directory of your choice
+3. Navigate to the directory and run:
+```bash
+cd path/to/extracted/directory
+npm install
+npm run build
+
+# Link for global usage (optional)
+npm link
+```
+
+> **Note:** This package is not currently registered on npm. Do not clone this repository directly inside another git repository to avoid git-in-git issues.
 
 ## Basic Usage
 
