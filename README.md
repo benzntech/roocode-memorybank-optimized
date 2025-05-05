@@ -1,6 +1,7 @@
 # VibeCoding Memory Bank
 
 A powerful system for project context retention and documentation that helps developers maintain a persistent memory of their work, with Roo-Code integration.
+May work with other tools as well, or change it so it does
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
