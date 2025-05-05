@@ -1,0 +1,53 @@
+{
+  "name": "vibecoding-memory-bank",
+  "version": "1.0.0",
+  "description": "Enhanced Memory Bank System for project context retention and documentation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "umb": "node scripts/umb.js",
+    "install-hooks": "node scripts/install-git-hooks.js",
+    "test-memory-bank": "ts-node scripts/test-memory-bank.ts",
+    "roo-setup": "node scripts/setup-roo-integration.js",
+    "roo-sync": "node scripts/generate-roo-rules.js"
+  },
+  "keywords": [
+    "memory-bank",
+    "documentation",
+    "project-context",
+    "knowledge-management",
+    "developer-tools",
+    "roo-code",
+    "ai-coding-assistant"
+  ],
+  "author": "VibeCoding",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.1",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
+    "jest": "^29.6.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "bin": {
+    "umb": "./scripts/umb.js"
+  },
+  "files": [
+    "dist",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

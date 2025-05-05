@@ -1,0 +1,265 @@
+import fs from 'fs-extra';
+import path from 'path';
+import { MemoryBank } from './memory-bank';
+
+/**
+ * Configuration options for the Roo-Code integration
+ */
+export interface RooIntegrationConfig {
+  /** Base directory for the memory bank (defaults to ./memory-bank) */
+  memoryBankDir?: string;
+  /** Directory where Roo rules will be stored (defaults to .roo/rules) */
+  rooRulesDir?: string;
+  /** Automatically generate Roo rules from memory bank content */
+  autoGenerateRules?: boolean;
+  /** Workspace root directory */
+  workspaceDir?: string;
+}
+
+/**
+ * Roo-Code Memory Bank Integration
+ * 
+ * This class provides integration between the Memory Bank system and Roo-Code.
+ * It handles the initialization, configuration, and operations needed to make
+ * the memory bank work seamlessly with Roo-Code.
+ */
+export class RooIntegration {
+  private memoryBank: MemoryBank;
+  private config: Required<RooIntegrationConfig>;
+  private initialized: boolean = false;
+
+  /**
+   * Create a new Roo-Code integration instance
+   * @param config Configuration options
+   */
+  constructor(config: RooIntegrationConfig = {}) {
+    // Set defaults for configuration
+    this.config = {
+      memoryBankDir: config.memoryBankDir || path.join(process.cwd(), 'memory-bank'),
+      rooRulesDir: config.rooRulesDir || path.join(process.cwd(), '.roo', 'rules'),
+      autoGenerateRules: config.autoGenerateRules !== undefined ? config.autoGenerateRules : true,
+      workspaceDir: config.workspaceDir || process.cwd()
+    };
+
+    // Initialize the memory bank
+    this.memoryBank = new MemoryBank(this.config.memoryBankDir);
+  }
+
+  /**
+   * Initialize the Roo-Code integration
+   * @returns True if initialization was successful
+   */
+  public async initialize(): Promise<boolean> {
+    try {
+      // Initialize the memory bank
+      const memoryBankInitialized = await this.memoryBank.initialize();
+      
+      if (memoryBankInitialized) {
+        // Create Roo rules directory if it doesn't exist
+        await fs.ensureDir(this.config.rooRulesDir);
+        
+        // Generate rules if auto-generation is enabled
+        if (this.config.autoGenerateRules) {
+          await this.generateRooRules();
+        }
+        
+        this.initialized = true;
+      }
+      
+      return memoryBankInitialized;
+    } catch (error) {
+      console.error('Error initializing Roo-Code integration:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Generate Roo-Code custom instruction files from memory bank content
+   */
+  public async generateRooRules(): Promise<boolean> {
+    try {
+      // Generate memory bank reference rule
+      const memoryBankRule = `# Memory Bank Reference
+
+This file provides Roo with context from the memory bank located at:
+\`${this.config.memoryBankDir}\`
+
+## Active Context
+The active context is the current focus of development and recent changes.
+Refer to this when working on the codebase to understand the current state.
+
+## Product Context
+The product context provides an overview of the project, its goals, features,
+and architecture. Use this information to ensure your responses align with
+the project vision.
+
+## System Patterns
+System patterns describe the architectural and design patterns used in the project.
+Follow these patterns when suggesting code changes.
+
+## Decision Log
+The decision log contains important decisions and their rationale.
+Respect these decisions when making suggestions.
+`;
+
+      // Write the rule file
+      await fs.writeFile(
+        path.join(this.config.rooRulesDir, '01-memory-bank-reference.md'),
+        memoryBankRule
+      );
+
+      // Generate active context rule from memory bank content
+      await this.generateActiveContextRule();
+      
+      return true;
+    } catch (error) {
+      console.error('Error generating Roo rules:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Generate active context rule from memory bank
+   */
+  private async generateActiveContextRule(): Promise<boolean> {
+    try {
+      // Read the active context file
+      const activeContextPath = path.join(this.config.memoryBankDir, 'activeContext.md');
+      
+      if (await fs.pathExists(activeContextPath)) {
+        const activeContext = await fs.readFile(activeContextPath, 'utf8');
+        
+        // Extract sections
+        const currentFocus = this.extractSection(activeContext, '## Current Focus');
+        const recentChanges = this.extractSection(activeContext, '## Recent Changes');
+        const openQuestions = this.extractSection(activeContext, '## Open Questions/Issues');
+        
+        // Create active context rule
+        const activeContextRule = `# Active Development Context
+
+## Current Focus
+${currentFocus || '- No current focus specified'}
+
+## Recent Changes
+${recentChanges || '- No recent changes recorded'}
+
+## Open Questions/Issues
+${openQuestions || '- No open questions'}
+
+---
+This file is automatically generated from the memory bank. Do not edit directly.
+Last updated: ${new Date().toISOString()}
+`;
+
+        // Write the rule file
+        await fs.writeFile(
+          path.join(this.config.rooRulesDir, '02-active-context.md'),
+          activeContextRule
+        );
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error generating active context rule:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Update Roo-Code rules with current memory bank content
+   */
+  public async updateRooRules(): Promise<boolean> {
+    try {
+      if (!this.initialized) {
+        await this.initialize();
+      }
+      
+      return await this.generateRooRules();
+    } catch (error) {
+      console.error('Error updating Roo rules:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Sync memory bank changes to Roo-Code rules
+   * This can be called after memory bank updates to ensure Roo has the latest context
+   */
+  public async syncMemoryBankToRoo(): Promise<boolean> {
+    try {
+      return await this.updateRooRules();
+    } catch (error) {
+      console.error('Error syncing memory bank to Roo:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Auto-detect and configure for a Roo-Code workspace
+   * @param workspacePath Path to the workspace root (defaults to current directory)
+   */
+  public static async autoConfigureForWorkspace(
+    workspacePath: string = process.cwd()
+  ): Promise<RooIntegration | null> {
+    try {
+      // Check if this is a Roo-Code workspace
+      const isRooWorkspace = 
+        await fs.pathExists(path.join(workspacePath, '.roo')) || 
+        await fs.pathExists(path.join(workspacePath, '.roorules'));
+      
+      if (!isRooWorkspace) {
+        console.log('This does not appear to be a Roo-Code workspace.');
+        return null;
+      }
+      
+      // Create .roo/rules directory if it doesn't exist
+      const rooRulesDir = path.join(workspacePath, '.roo', 'rules');
+      await fs.ensureDir(rooRulesDir);
+      
+      // Create memory bank directory
+      const memoryBankDir = path.join(workspacePath, 'memory-bank');
+      
+      // Configure the integration
+      const config: RooIntegrationConfig = {
+        workspaceDir: workspacePath,
+        memoryBankDir,
+        rooRulesDir,
+        autoGenerateRules: true
+      };
+      
+      // Create and initialize the integration
+      const integration = new RooIntegration(config);
+      await integration.initialize();
+      
+      return integration;
+    } catch (error) {
+      console.error('Error auto-configuring for workspace:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Extract a section from markdown content
+   * @param content Markdown content
+   * @param sectionHeader Section header to extract
+   * @returns Extracted section content
+   */
+  private extractSection(content: string, sectionHeader: string): string {
+    const sectionRegex = new RegExp(`${sectionHeader}\\n([\\s\\S]*?)(?=\\n## |$)`);
+    const match = content.match(sectionRegex);
+    return match ? match[1].trim() : '';
+  }
+
+  /**
+   * Get the memory bank instance
+   * @returns The memory bank instance
+   */
+  public getMemoryBank(): MemoryBank {
+    return this.memoryBank;
+  }
+}
+
+// Export a default instance for easy use
+export const rooIntegration = new RooIntegration();
