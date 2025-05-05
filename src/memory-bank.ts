@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { EnhancedMemoryBank } from './enhanced-memory-bank';
+import { EnhancedMemoryBank, Statistics } from './enhanced-memory-bank';
 
 /**
  * Memory Bank Manager
@@ -9,7 +9,7 @@ import { EnhancedMemoryBank } from './enhanced-memory-bank';
  * It handles the initialization, configuration, and operations of the memory bank.
  */
 export class MemoryBank {
-  private enhancedMemoryBank: EnhancedMemoryBank;
+  private _enhancedMemoryBank: EnhancedMemoryBank;
   private baseDir: string;
   private productContextPath: string;
   private activeContextPath: string;
@@ -26,7 +26,7 @@ export class MemoryBank {
     this.baseDir = baseDir || path.join(process.cwd(), 'memory-bank');
     
     // Initialize the enhanced memory bank
-    this.enhancedMemoryBank = new EnhancedMemoryBank({
+    this._enhancedMemoryBank = new EnhancedMemoryBank({
       baseDir: this.baseDir
     });
     
@@ -39,6 +39,63 @@ export class MemoryBank {
     this.lastUpdatePath = path.join(this.baseDir, '.last_update');
   }
 
+  // Public methods to expose EnhancedMemoryBank functionality
+  public getTimestamp(): string {
+    return this._enhancedMemoryBank.getTimestamp();
+  }
+
+  public getDateString(date?: Date): string {
+    return this._enhancedMemoryBank.getDateString(date);
+  }
+
+  public async createDailyFile(date?: Date): Promise<string> {
+    return this._enhancedMemoryBank.createDailyFile(date);
+  }
+
+  public async getLatestDailyFile(): Promise<string | null> {
+    return this._enhancedMemoryBank.getLatestDailyFile();
+  }
+
+  public async shouldStartNewSession(): Promise<boolean> {
+    return this._enhancedMemoryBank.shouldStartNewSession();
+  }
+
+  public async createSessionFile(): Promise<string> {
+    return this._enhancedMemoryBank.createSessionFile();
+  }
+
+  public async getCurrentSessionFile(): Promise<string | null> {
+    return this._enhancedMemoryBank.getCurrentSessionFile();
+  }
+
+  public async updateSessionEndTime(filePath: string): Promise<boolean> {
+    return this._enhancedMemoryBank.updateSessionEndTime(filePath);
+  }
+
+  public async archiveOldFiles(): Promise<boolean> {
+    return this._enhancedMemoryBank.archiveOldFiles();
+  }
+
+  public async loadContext(): Promise<boolean> {
+    return this._enhancedMemoryBank.loadContext();
+  }
+
+  public async trackStatistics(): Promise<Statistics> {
+    return this._enhancedMemoryBank.trackStatistics();
+  }
+
+  public async updateDailyActiveContext(update: any): Promise<boolean> {
+    return this._enhancedMemoryBank.updateDailyActiveContext(update);
+  }
+
+  public async aggregateDailyFiles(): Promise<boolean> {
+    return this._enhancedMemoryBank.aggregateDailyFiles();
+  }
+
+  public async reconstructMemoryBank(): Promise<boolean> {
+    return this._enhancedMemoryBank.reconstructMemoryBank();
+  }
+
   /**
    * Initialize the memory bank
    * @returns True if initialization was successful
@@ -46,7 +103,7 @@ export class MemoryBank {
   public async initialize(): Promise<boolean> {
     try {
       // Initialize the enhanced memory bank
-      const success = await this.enhancedMemoryBank.initialize();
+      const success = await this._enhancedMemoryBank.initialize();
       
       // Create master files if they don't exist
       if (success) {
@@ -65,7 +122,7 @@ export class MemoryBank {
    */
   private async createMasterFiles(): Promise<void> {
     const date = new Date();
-    const timestamp = this.enhancedMemoryBank.getTimestamp();
+    const timestamp = this._enhancedMemoryBank.getTimestamp();
     
     // Create productContext.md
     if (!await fs.pathExists(this.productContextPath)) {
@@ -179,11 +236,11 @@ Footnotes:
     architectureOverview?: string;
   }): Promise<boolean> {
     try {
-      const content = await this.enhancedMemoryBank.readFile(this.productContextPath);
+      const content = await this._enhancedMemoryBank.readFile(this.productContextPath);
       let updatedContent = content;
       
       if (update.projectOverview) {
-        updatedContent = this.enhancedMemoryBank.updateSection(
+        updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
           '## Project Overview',
           update.projectOverview
@@ -191,7 +248,7 @@ Footnotes:
       }
       
       if (update.goalsAndObjectives) {
-        updatedContent = this.enhancedMemoryBank.updateSection(
+        updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
           '## Goals and Objectives',
           update.goalsAndObjectives
@@ -199,7 +256,7 @@ Footnotes:
       }
       
       if (update.coreFeatures) {
-        updatedContent = this.enhancedMemoryBank.updateSection(
+        updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
           '## Core Features',
           update.coreFeatures
@@ -207,7 +264,7 @@ Footnotes:
       }
       
       if (update.architectureOverview) {
-        updatedContent = this.enhancedMemoryBank.updateSection(
+        updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
           '## Architecture Overview',
           update.architectureOverview
@@ -215,13 +272,13 @@ Footnotes:
       }
       
       // Add timestamp to footnotes
-      const timestamp = this.enhancedMemoryBank.getTimestamp();
+      const timestamp = this._enhancedMemoryBank.getTimestamp();
       updatedContent = updatedContent.replace(
         /---\nFootnotes:\n([\s\S]*?)$/,
         `---\nFootnotes:\n[${timestamp}] - Updated product context\n`
       );
       
-      return await this.enhancedMemoryBank.writeFile(this.productContextPath, updatedContent);
+      return await this._enhancedMemoryBank.writeFile(this.productContextPath, updatedContent);
     } catch (error) {
       console.error('Error updating product context:', error);
       return false;
@@ -240,14 +297,14 @@ Footnotes:
   }): Promise<boolean> {
     try {
       // First update the daily active context file
-      const dailyUpdateSuccess = await this.enhancedMemoryBank.updateDailyActiveContext(update);
+      const dailyUpdateSuccess = await this._enhancedMemoryBank.updateDailyActiveContext(update);
       
       // Then update the master active context file for backward compatibility
-      const content = await this.enhancedMemoryBank.readFile(this.activeContextPath);
+      const content = await this._enhancedMemoryBank.readFile(this.activeContextPath);
       let updatedContent = content;
       
       if (update.currentFocus) {
-        updatedContent = this.enhancedMemoryBank.updateSection(
+        updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
           '## Current Focus',
           update.currentFocus
@@ -256,7 +313,7 @@ Footnotes:
       
       // Add new recent change at the top of the list
       if (update.recentChanges) {
-        const timestamp = this.enhancedMemoryBank.getTimestamp();
+        const timestamp = this._enhancedMemoryBank.getTimestamp();
         updatedContent = updatedContent.replace(
           /## Recent Changes\n/,
           `## Recent Changes\n[${timestamp}] - ${update.recentChanges}\n`
@@ -264,14 +321,14 @@ Footnotes:
       }
       
       if (update.openQuestions) {
-        updatedContent = this.enhancedMemoryBank.updateSection(
+        updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
           '## Open Questions/Issues',
           update.openQuestions
         );
       }
       
-      const masterUpdateSuccess = await this.enhancedMemoryBank.writeFile(this.activeContextPath, updatedContent);
+      const masterUpdateSuccess = await this._enhancedMemoryBank.writeFile(this.activeContextPath, updatedContent);
       
       // Update the last update timestamp
       await fs.writeFile(this.lastUpdatePath, new Date().toISOString());
@@ -322,28 +379,28 @@ Footnotes:
       let updatedFiles = [];
       
       // Check if we need to start a new session
-      const startNewSession = await this.enhancedMemoryBank.shouldStartNewSession();
-      let sessionFile = await this.enhancedMemoryBank.getCurrentSessionFile();
+      const startNewSession = await this._enhancedMemoryBank.shouldStartNewSession();
+      let sessionFile = await this._enhancedMemoryBank.getCurrentSessionFile();
       
       if (startNewSession) {
         // Load context from previous day if needed
-        await this.enhancedMemoryBank.loadContext();
+        await this._enhancedMemoryBank.loadContext();
         
         // Create a new session file
-        sessionFile = await this.enhancedMemoryBank.createSessionFile();
+        sessionFile = await this._enhancedMemoryBank.createSessionFile();
         console.log(`Started new session: ${sessionFile}`);
       } else if (sessionFile) {
         // Update the end time of the current session
-        await this.enhancedMemoryBank.updateSessionEndTime(sessionFile);
+        await this._enhancedMemoryBank.updateSessionEndTime(sessionFile);
         console.log(`Updated session: ${sessionFile}`);
       } else {
         // No current session, create one
-        sessionFile = await this.enhancedMemoryBank.createSessionFile();
+        sessionFile = await this._enhancedMemoryBank.createSessionFile();
         console.log(`Created new session: ${sessionFile}`);
       }
       
       // Track statistics for this update
-      const stats = await this.enhancedMemoryBank.trackStatistics();
+      const stats = await this._enhancedMemoryBank.trackStatistics();
       console.log(`Statistics tracked: ${stats.timeSpent} spent, $${stats.estimatedCost} estimated cost`);
       
       if (updates.productContext) {
@@ -356,16 +413,16 @@ Footnotes:
         if (success) {
           updatedFiles.push('activeContext.md');
           // Also add the daily file
-          const dateStr = this.enhancedMemoryBank.getDateString();
+          const dateStr = this._enhancedMemoryBank.getDateString();
           updatedFiles.push(`daily/activeContext-${dateStr}.md`);
         }
       }
       
       // Aggregate daily files into master files
-      await this.enhancedMemoryBank.aggregateDailyFiles();
+      await this._enhancedMemoryBank.aggregateDailyFiles();
       
       // Archive old files
-      await this.enhancedMemoryBank.archiveOldFiles();
+      await this._enhancedMemoryBank.archiveOldFiles();
       
       if (updatedFiles.length === 0) {
         return {
@@ -394,20 +451,18 @@ Footnotes:
 // Export a default instance for backward compatibility
 export const memoryBank = new MemoryBank();
 
-// Re-export functions from enhanced memory bank for backward compatibility
-export const {
-  getTimestamp,
-  getDateString,
-  createDailyFile,
-  getLatestDailyFile,
-  shouldStartNewSession,
-  createSessionFile,
-  getCurrentSessionFile,
-  updateSessionEndTime,
-  archiveOldFiles,
-  loadContext,
-  trackStatistics,
-  updateDailyActiveContext,
-  aggregateDailyFiles,
-  reconstructMemoryBank
-} = memoryBank.enhancedMemoryBank;
+// Re-export functions from memory bank for backward compatibility
+export const getTimestamp = memoryBank.getTimestamp.bind(memoryBank);
+export const getDateString = memoryBank.getDateString.bind(memoryBank);
+export const createDailyFile = async () => memoryBank.createDailyFile();
+export const getLatestDailyFile = async () => memoryBank.getLatestDailyFile();
+export const shouldStartNewSession = async () => memoryBank.shouldStartNewSession();
+export const createSessionFile = async () => memoryBank.createSessionFile();
+export const getCurrentSessionFile = async () => memoryBank.getCurrentSessionFile();
+export const updateSessionEndTime = async (filePath: string) => memoryBank.updateSessionEndTime(filePath);
+export const archiveOldFiles = async () => memoryBank.archiveOldFiles();
+export const loadContext = async () => memoryBank.loadContext();
+export const trackStatistics = async () => memoryBank.trackStatistics();
+export const updateDailyActiveContext = async (update: any) => memoryBank.updateDailyActiveContext(update);
+export const aggregateDailyFiles = async () => memoryBank.aggregateDailyFiles();
+export const reconstructMemoryBank = async () => memoryBank.reconstructMemoryBank();
