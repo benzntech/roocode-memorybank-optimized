@@ -520,6 +520,62 @@ Set up automation:
 - Schedule regular sync operations
 - Integrate with your CI/CD pipeline
 
+### 5. Shell Integration
+
+Use Roo's shell integration for a seamless workflow:
+- Run Memory Bank commands directly from Roo chat
+- Update context without leaving your coding environment
+- Let Roo suggest context updates based on your work
+
+## Shell Integration with Roo
+
+The Memory Bank system can be used directly from the Roo chat interface using Roo's shell integration feature. This allows you to update your project context without switching to a terminal.
+
+### Using UMB Commands in Roo Chat
+
+With Roo's shell integration, you can run Memory Bank commands directly in the chat by prefixing them with `!`:
+
+```
+!umb update activeContext currentFocus='Implementing feature X'
+!umb add decision title='Use TypeScript' rationale='Better type safety' implications='Need to refactor existing code' status='Implemented'
+!umb update productContext coreFeatures='- Feature A\n- Feature B'
+!umb roo-sync
+```
+
+### Setup Requirements
+
+To use Memory Bank commands in Roo chat:
+
+1. Ensure the Memory Bank is installed with the `npm link` option to make the `umb` command globally available
+2. Verify that the `umb` command works in your terminal
+3. Make sure Roo's shell integration is enabled
+
+### Common Use Cases
+
+Here are some effective ways to use Memory Bank commands in Roo chat:
+
+1. **Update context while discussing code**:
+   ```
+   !umb update activeContext currentFocus='Refactoring authentication system'
+   ```
+
+2. **Record decisions during design discussions**:
+   ```
+   !umb add decision title='Switch to GraphQL' rationale='More efficient data fetching' implications='Need to learn GraphQL schema design' status='Pending'
+   ```
+
+3. **Sync context after making changes**:
+   ```
+   !umb roo-sync
+   ```
+
+4. **Check current context**:
+   ```
+   !cat memory-bank/activeContext.md
+   ```
+
+This integration creates a powerful workflow where code changes and context documentation happen simultaneously, with Roo acting as both a coding assistant and a Memory Bank facilitator.
+
 ### 5. Team Alignment
 
 Ensure team consistency:

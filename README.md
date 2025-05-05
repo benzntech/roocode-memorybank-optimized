@@ -257,6 +257,18 @@ npx umb roo-setup
 npx umb roo-sync
 ```
 
+#### Shell Integration
+
+You can use Memory Bank commands directly in the Roo chat interface using Roo's shell integration:
+
+```
+!umb update activeContext currentFocus='Implementing feature X'
+!umb add decision title='Use TypeScript' rationale='Better type safety'
+!umb roo-sync
+```
+
+This creates a seamless workflow where you can update your project context without leaving the Roo chat.
+
 For detailed instructions, see [Roo-Code Integration](docs/ROO-INTEGRATION.md).
 
 ## Documentation
