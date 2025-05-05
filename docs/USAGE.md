@@ -26,9 +26,11 @@ The Enhanced Memory Bank system is designed to solve the problem of context loss
 
 ## Installation
 
-There are two recommended ways to use this package:
+The Memory Bank system can be installed and used in several ways:
 
-### Method 1: Clone the repository in a dedicated directory
+### Option 1: Install in a separate directory (Recommended)
+
+This approach keeps the Memory Bank separate from your projects but still allows you to use it with any project.
 
 ```bash
 # Clone the repository
@@ -43,11 +45,19 @@ npm install
 # Build the project
 npm run build
 
-# Link for global usage (optional)
+# Link for global usage
 npm link
 ```
 
-### Method 2: Download as a ZIP file
+Then, in any project where you want to use it:
+
+```bash
+# Initialize the memory bank in your project
+cd /path/to/your/project
+npx umb init
+```
+
+### Option 2: Download as a ZIP file
 
 1. Download the ZIP from GitHub: https://github.com/shipdocs/roocode-memorybank-optimized/archive/refs/heads/main.zip
 2. Extract to a directory of your choice
@@ -56,12 +66,30 @@ npm link
 cd path/to/extracted/directory
 npm install
 npm run build
-
-# Link for global usage (optional)
-npm link
+npm link  # Makes the tool available globally
 ```
 
-> **Note:** This package is not currently registered on npm. Do not clone this repository directly inside another git repository to avoid git-in-git issues.
+### Option 3: Install directly in your project (Advanced)
+
+If you want to include the Memory Bank directly in your project:
+
+```bash
+# 1. Navigate to your project root
+cd /path/to/your/project
+
+# 2. Clone the repository
+git clone https://github.com/shipdocs/roocode-memorybank-optimized.git
+
+# 3. Remove the .git directory to avoid git-in-git issues
+cd roocode-memorybank-optimized
+rm -rf .git
+
+# 4. Install and build
+npm install
+npm run build
+```
+
+> **Note:** The Memory Bank can be used with any project regardless of where it's installed, as it creates its own directory structure in the project where you run `npx umb init`.
 
 ## Basic Usage
 
