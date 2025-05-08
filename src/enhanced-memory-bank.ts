@@ -164,7 +164,12 @@ export class EnhancedMemoryBank {
    */
   public updateSection(content: string, sectionHeader: string, newContent: string): string {
     const sectionRegex = new RegExp(`${sectionHeader}\\n([\\s\\S]*?)(?=\\n## |$)`);
-    return content.replace(sectionRegex, `${sectionHeader}\n${newContent}\n`);
+    const currentSection = content.match(sectionRegex);
+    if (currentSection) {
+      return content.replace(sectionRegex, `${sectionHeader}\n${newContent}\n`);
+    }
+    // If section header doesn't exist, append it with the new content
+    return `${content}\n${sectionHeader}\n${newContent}\n`;
   }
   /**
    * Create a daily file
@@ -209,6 +214,9 @@ export class EnhancedMemoryBank {
    */
   public async getLatestDailyFile(): Promise<string | null> {
     try {
+      if (!await fs.pathExists(this.dailyDir)) {
+        return null; // Daily directory doesn't exist
+      }
       const files = await fs.readdir(this.dailyDir);
       const dailyFiles = files.filter(file => file.startsWith('activeContext-') && file.endsWith('.md'));
       
@@ -287,6 +295,9 @@ ${this.getTimestamp()}
    */
   public async getCurrentSessionFile(): Promise<string | null> {
     try {
+      if (!await fs.pathExists(this.sessionsDir)) {
+        return null; // Sessions directory doesn't exist
+      }
       const files = await fs.readdir(this.sessionsDir);
       const sessionFiles = files.filter(file => file.startsWith('session-') && file.endsWith('.md'));
       
@@ -338,6 +349,10 @@ ${this.getTimestamp()}
    */
   public async archiveOldFiles(): Promise<boolean> {
     try {
+      if (!await fs.pathExists(this.dailyDir) || !await fs.pathExists(this.archiveDir)) {
+        // If daily or archive dir doesn't exist, nothing to do or nowhere to move.
+        return true;
+      }
       const now = new Date();
       const thresholdDate = new Date(now.getTime() - this.archiveThresholdDays * 24 * 60 * 60 * 1000);
       const thresholdDateStr = this.getDateString(thresholdDate);
@@ -381,7 +396,7 @@ ${this.getTimestamp()}
       
       // Copy content from latest daily file to today's file
       const latestContent = await this.readFile(latestDailyFile);
-      const todayContent = await this.readFile(todayFile);
+      const todayContent = await this.readFile(todayFile); // Read potentially newly created empty file
       
       // Extract sections from latest file
       const currentFocus = this.extractSection(latestContent, '## Current Focus');
@@ -431,7 +446,7 @@ ${this.getTimestamp()}
       
       try {
         // Get git diff stats
-        const gitDiffStats = execSync('git diff --stat', { encoding: 'utf8' });
+        const gitDiffStats = execSync('git diff --stat HEAD', { encoding: 'utf8', stdio: 'pipe' });
         const gitDiffMatch = gitDiffStats.match(/(\d+) files? changed, (\d+) insertions?\(\+\), (\d+) deletions?\(-\)/);
         
         if (gitDiffMatch) {
@@ -441,20 +456,28 @@ ${this.getTimestamp()}
         }
         
         // Get total lines of code
-        const gitLsFiles = execSync('git ls-files | grep -v "node_modules" | xargs wc -l', { encoding: 'utf8' });
-        const gitLsMatch = gitLsFiles.match(/(\d+) total/);
+        // Using -z and -0 for safer filename handling, and -r for xargs to not run wc if no files.
+        // Added || echo "0 total" to ensure the command succeeds even if wc has partial errors,
+        // preventing execSync from throwing.
+        const gitLsFilesCmd = '(git ls-files -z | grep -z -vE "(^|/)node_modules/" | xargs -0 -r wc -l) || echo "0 total"';
+        const gitLsFilesOutput = execSync(gitLsFilesCmd, { encoding: 'utf8', stdio: 'pipe' });
+        const gitLsMatch = gitLsFilesOutput.match(/(\d+)\s+total/);
         
-        if (gitLsMatch) {
+        if (gitLsMatch && gitLsMatch[1]) {
           totalLines = parseInt(gitLsMatch[1], 10);
+        } else if (gitLsFilesOutput.includes("0 total") && !gitLsMatch) {
+            // This case handles when the fallback "0 total" was echoed
+            totalLines = 0;
         }
+
       } catch (error) {
-        console.warn('Git statistics not available:', error);
+        console.warn('Git statistics not available or failed to parse:', error);
       }
       
       const stats: Statistics = {
         timeSpent,
         estimatedCost,
-        filesCreated,
+        filesCreated, // Note: filesCreated and filesDeleted are not easily available from simple git diff --stat
         filesModified,
         filesDeleted,
         linesAdded,
@@ -505,9 +528,12 @@ ${this.getTimestamp()}
       // Add new recent change at the top of the list
       if (update.recentChanges) {
         const timestamp = this.getTimestamp();
-        updatedContent = updatedContent.replace(
-          /## Recent Changes\n/,
-          `## Recent Changes\n[${timestamp}] - ${update.recentChanges}\n`
+        const existingRecentChanges = this.extractSection(updatedContent, '## Recent Changes');
+        const newRecentChanges = `[${timestamp}] - ${update.recentChanges}${existingRecentChanges ? '\n' + existingRecentChanges : ''}`;
+        updatedContent = this.updateSection(
+          updatedContent,
+          '## Recent Changes',
+          newRecentChanges
         );
       }
       
