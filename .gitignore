@@ -54,3 +54,5 @@ memory-bank/.last_update
 !memory-bank/daily/.gitkeep
 !memory-bank/sessions/
 !memory-bank/sessions/.gitkeep
+test-memory-bank-init.ts
+updated-init-test-area/
