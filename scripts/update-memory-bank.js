@@ -12,7 +12,11 @@ const { execSync } = require('child_process');
 // Assuming the compiled output is in 'dist' at the project root
 const { MemoryBank } = require('../dist/index');
 
-// Function to gather information from recent commits
+/**
+ * Retrieves commit hashes and messages from the last 7 days, excluding merge commits.
+ *
+ * @returns {string[]} An array of recent commit descriptions, or an empty array if unavailable.
+ */
 function gatherRecentCommits() {
   try {
     // Get recent commits (last 7 days)
@@ -24,7 +28,11 @@ function gatherRecentCommits() {
   }
 }
 
-// Function to gather information from recent pull requests
+/**
+ * Retrieves a list of recent merged pull requests from the last 7 days using git merge commits.
+ *
+ * @returns {string[]} An array of strings representing recent merged pull requests, or an empty array if none are found or on error.
+ */
 function gatherRecentPRs() {
   try {
     // This is a simplified version - in a real implementation, you would use the GitHub API
@@ -37,7 +45,13 @@ function gatherRecentPRs() {
   }
 }
 
-// Main function to automatically update the memory bank
+/**
+ * Gathers recent project activity and updates the memory bank using the MemoryBank class.
+ *
+ * Collects recent commits and pull requests from the local git repository, prepares structured update content for product context, active context, system patterns, decisions, and progress, and delegates the update process to the MemoryBank's command handler.
+ *
+ * @returns {Promise<{success: boolean, message: string}>} The result of the memory bank update operation.
+ */
 async function autoUpdateMemoryBank() {
   // Instantiate MemoryBank. By default, it will target './memory-bank' in the current working directory.
   const mb = new MemoryBank();
@@ -139,7 +153,11 @@ async function autoUpdateMemoryBank() {
   }
 }
 
-// Run the auto-update function and log its message
+/**
+ * Executes the memory bank auto-update process and logs the outcome.
+ *
+ * Calls {@link autoUpdateMemoryBank}, outputs the resulting message, and sets the process exit code to 1 if the update fails.
+ */
 async function main() {
   const result = await autoUpdateMemoryBank();
   console.log(result.message);
