@@ -3,8 +3,25 @@ import path from 'path';
 import { EnhancedMemoryBank, Statistics } from './enhanced-memory-bank';
 
 /**
+ * Options for the MemoryBank constructor.
+ */
+export interface MemoryBankOptions {
+  /**
+   * Absolute or relative path to the base directory for the memory bank.
+   * If provided, this takes precedence over projectName.
+   */
+  baseDir?: string;
+  /**
+   * Name of the project. If provided (and baseDir is not), the memory bank
+   * will be created in a directory with this name within the current working directory.
+   * e.g., path.join(process.cwd(), projectName)
+   */
+  projectName?: string;
+}
+
+/**
  * Memory Bank Manager
- * 
+ *
  * This class provides a simplified interface to the Enhanced Memory Bank system.
  * It handles the initialization, configuration, and operations of the memory bank.
  */
@@ -19,17 +36,31 @@ export class MemoryBank {
   private lastUpdatePath: string;
 
   /**
-   * Create a new Memory Bank instance
-   * @param baseDir Base directory for the memory bank (default: process.cwd()/memory-bank)
+   * Create a new Memory Bank instance.
+   * @param options Optional configuration for base directory or project name, or a string for baseDir for backward compatibility.
+   *                - If options is a string, it's treated as `baseDir`.
+   *                - If options is an object:
+   *                  - `options.baseDir`: Specifies the exact base directory.
+   *                  - `options.projectName`: Creates a directory named `projectName` in `process.cwd()`.
+   *                - If no options are provided, defaults to `path.join(process.cwd(), 'memory-bank')`.
    */
-  constructor(baseDir?: string) {
-    this.baseDir = baseDir || path.join(process.cwd(), 'memory-bank');
-    
+  constructor(options?: MemoryBankOptions | string) {
+    if (typeof options === 'string') {
+      // Backward compatibility: if a string is passed, treat it as baseDir
+      this.baseDir = options;
+    } else if (options?.baseDir) {
+      this.baseDir = options.baseDir;
+    } else if (options?.projectName) {
+      this.baseDir = path.join(process.cwd(), options.projectName);
+    } else {
+      this.baseDir = path.join(process.cwd(), 'memory-bank');
+    }
+
     // Initialize the enhanced memory bank
     this._enhancedMemoryBank = new EnhancedMemoryBank({
       baseDir: this.baseDir
     });
-    
+
     // Define file paths
     this.productContextPath = path.join(this.baseDir, 'productContext.md');
     this.activeContextPath = path.join(this.baseDir, 'activeContext.md');
@@ -104,12 +135,12 @@ export class MemoryBank {
     try {
       // Initialize the enhanced memory bank
       const success = await this._enhancedMemoryBank.initialize();
-      
+
       // Create master files if they don't exist
       if (success) {
         await this.createMasterFiles();
       }
-      
+
       return success;
     } catch (error) {
       console.error('Error initializing memory bank:', error);
@@ -123,7 +154,7 @@ export class MemoryBank {
   private async createMasterFiles(): Promise<void> {
     const date = new Date();
     const timestamp = this._enhancedMemoryBank.getTimestamp();
-    
+
     // Create productContext.md
     if (!await fs.pathExists(this.productContextPath)) {
       const content = `# Product Context
@@ -146,7 +177,7 @@ Footnotes:
 `;
       await fs.writeFile(this.productContextPath, content, 'utf8');
     }
-    
+
     // Create activeContext.md
     if (!await fs.pathExists(this.activeContextPath)) {
       const content = `# Active Context
@@ -172,7 +203,7 @@ Footnotes:
 `;
       await fs.writeFile(this.activeContextPath, content, 'utf8');
     }
-    
+
     // Create systemPatterns.md
     if (!await fs.pathExists(this.systemPatternsPath)) {
       const content = `# System Patterns
@@ -191,7 +222,7 @@ Footnotes:
 `;
       await fs.writeFile(this.systemPatternsPath, content, 'utf8');
     }
-    
+
     // Create decisionLog.md
     if (!await fs.pathExists(this.decisionLogPath)) {
       const content = `# Decision Log
@@ -202,7 +233,7 @@ Footnotes:
 `;
       await fs.writeFile(this.decisionLogPath, content, 'utf8');
     }
-    
+
     // Create progress.md
     if (!await fs.pathExists(this.progressPath)) {
       const content = `# Progress
@@ -238,7 +269,7 @@ Footnotes:
     try {
       const content = await this._enhancedMemoryBank.readFile(this.productContextPath);
       let updatedContent = content;
-      
+
       if (update.projectOverview) {
         updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
@@ -246,7 +277,7 @@ Footnotes:
           update.projectOverview
         );
       }
-      
+
       if (update.goalsAndObjectives) {
         updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
@@ -254,7 +285,7 @@ Footnotes:
           update.goalsAndObjectives
         );
       }
-      
+
       if (update.coreFeatures) {
         updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
@@ -262,7 +293,7 @@ Footnotes:
           update.coreFeatures
         );
       }
-      
+
       if (update.architectureOverview) {
         updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
@@ -270,14 +301,14 @@ Footnotes:
           update.architectureOverview
         );
       }
-      
+
       // Add timestamp to footnotes
       const timestamp = this._enhancedMemoryBank.getTimestamp();
       updatedContent = updatedContent.replace(
         /---\nFootnotes:\n([\s\S]*?)$/,
         `---\nFootnotes:\n[${timestamp}] - Updated product context\n`
       );
-      
+
       return await this._enhancedMemoryBank.writeFile(this.productContextPath, updatedContent);
     } catch (error) {
       console.error('Error updating product context:', error);
@@ -298,11 +329,11 @@ Footnotes:
     try {
       // First update the daily active context file
       const dailyUpdateSuccess = await this._enhancedMemoryBank.updateDailyActiveContext(update);
-      
+
       // Then update the master active context file for backward compatibility
       const content = await this._enhancedMemoryBank.readFile(this.activeContextPath);
       let updatedContent = content;
-      
+
       if (update.currentFocus) {
         updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
@@ -310,7 +341,7 @@ Footnotes:
           update.currentFocus
         );
       }
-      
+
       // Add new recent change at the top of the list
       if (update.recentChanges) {
         const timestamp = this._enhancedMemoryBank.getTimestamp();
@@ -319,7 +350,7 @@ Footnotes:
           `## Recent Changes\n[${timestamp}] - ${update.recentChanges}\n`
         );
       }
-      
+
       if (update.openQuestions) {
         updatedContent = this._enhancedMemoryBank.updateSection(
           updatedContent,
@@ -327,12 +358,12 @@ Footnotes:
           update.openQuestions
         );
       }
-      
+
       const masterUpdateSuccess = await this._enhancedMemoryBank.writeFile(this.activeContextPath, updatedContent);
-      
+
       // Update the last update timestamp
       await fs.writeFile(this.lastUpdatePath, new Date().toISOString());
-      
+
       return dailyUpdateSuccess && masterUpdateSuccess;
     } catch (error) {
       console.error('Error updating active context:', error);
@@ -377,15 +408,15 @@ Footnotes:
   }): Promise<{ success: boolean; message: string }> {
     try {
       let updatedFiles = [];
-      
+
       // Check if we need to start a new session
       const startNewSession = await this._enhancedMemoryBank.shouldStartNewSession();
       let sessionFile = await this._enhancedMemoryBank.getCurrentSessionFile();
-      
+
       if (startNewSession) {
         // Load context from previous day if needed
         await this._enhancedMemoryBank.loadContext();
-        
+
         // Create a new session file
         sessionFile = await this._enhancedMemoryBank.createSessionFile();
         console.log(`Started new session: ${sessionFile}`);
@@ -398,16 +429,16 @@ Footnotes:
         sessionFile = await this._enhancedMemoryBank.createSessionFile();
         console.log(`Created new session: ${sessionFile}`);
       }
-      
+
       // Track statistics for this update
       const stats = await this._enhancedMemoryBank.trackStatistics();
       console.log(`Statistics tracked: ${stats.timeSpent} spent, $${stats.estimatedCost} estimated cost`);
-      
+
       if (updates.productContext) {
         const success = await this.updateProductContext(updates.productContext);
         if (success) updatedFiles.push('productContext.md');
       }
-      
+
       if (updates.activeContext) {
         const success = await this.updateActiveContext(updates.activeContext);
         if (success) {
@@ -417,23 +448,23 @@ Footnotes:
           updatedFiles.push(`daily/activeContext-${dateStr}.md`);
         }
       }
-      
+
       // Aggregate daily files into master files
       await this._enhancedMemoryBank.aggregateDailyFiles();
-      
+
       // Archive old files
       await this._enhancedMemoryBank.archiveOldFiles();
-      
+
       if (updatedFiles.length === 0) {
         return {
           success: false,
           message: 'No updates provided. Memory bank remains unchanged.'
         };
       }
-      
+
       // Update the last update timestamp
       await fs.writeFile(this.lastUpdatePath, new Date().toISOString());
-      
+
       return {
         success: true,
         message: `Memory bank updated successfully. Updated files: ${updatedFiles.join(', ')}`
@@ -449,6 +480,7 @@ Footnotes:
 }
 
 // Export a default instance for backward compatibility
+// This will use the default path: path.join(process.cwd(), 'memory-bank')
 export const memoryBank = new MemoryBank();
 
 // Re-export functions from memory bank for backward compatibility
